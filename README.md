@@ -1,5 +1,3 @@
-
-https://github.com/user-attachments/assets/1e2fae7f-9c64-499d-b6b0-357cbb1998db
 **Features:**
 
 * imitate motd (exclude version)
