@@ -4,8 +4,6 @@ using MineStarter.Utils.Settings;
 Logger.DeleteLogFile();
 await Logger.Log("\n");
 
-await PortListener.UntilSomeoneLogin(Settings.Server.Port);
-
 while (true)
 {
     await Start();
