@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using HandshakeHelper.Models;
 using HandshakeHelper.Models.ResponsePayload;
 using HandshakeHelper.StreamHelper;
-using MineStarter.Constants;
+using MineStarter.Utils.Settings;
 using Newtonsoft.Json;
 using Version = HandshakeHelper.Models.ResponsePayload.Version;
 
@@ -100,19 +100,20 @@ public static class PortListener
         {
             stream.WriteObject(new Disconnect
             {
-                Reason = $"'{HandshakeConstants.DisconnectReason}'"
+                Reason = $"'{Settings.Handshake.DisconnectReason}'"
             });
 
             await Logger.Log("Someone connected", Colors.Info);
             return true;
         }
 
-        stream.WriteObject(await GetResponse());
+        var moddedForge = handshake.ServerAddress.Contains("FML");
+        stream.WriteObject(await GetResponse(moddedForge));
 
         return false;
     }
 
-    private static async Task<Response> GetResponse()
+    private static async Task<Response> GetResponse(bool modded = false)
     {
         var favicon = "";
         if (File.Exists("Assets/favicon.png"))
@@ -125,19 +126,32 @@ public static class PortListener
         {
             Version = new Version
             {
-                Name = HandshakeConstants.Name,
-                Protocol = HandshakeConstants.Protocol
+                Name = Settings.Handshake.Name,
+                Protocol = Settings.Handshake.Protocol
             },
             Description = new Description
             {
-                Text = HandshakeConstants.Text
+                Text = Settings.Handshake.Text
             },
             PlayerInfo = new PlayerInfo
             {
                 Online = 0,
                 Max = 0
             },
-            Favicon = $"data:image/png;base64,{favicon}"
+            Favicon = $"data:image/png;base64,{favicon}",
+            ModpackData = modded ?
+                new ModpackInfo
+                {
+                    Type = "FML",
+                    ProjectId = "0",
+                    Name = "MC Chocolate Edition",
+                    Version = "1.5",
+                    VersionId = "0",
+                    IsMetadata = false
+                }
+                : null,
+            PreviewsChat = false,
+            EnforcesSecureChat = false,
         };
 
         var resPayloadJson = JsonConvert.SerializeObject(resPayload);

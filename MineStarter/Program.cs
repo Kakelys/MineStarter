@@ -1,17 +1,20 @@
 ﻿using MineStarter;
+using MineStarter.Utils.Settings;
 
 Logger.DeleteLogFile();
 await Logger.Log("\n");
+
+await PortListener.UntilSomeoneLogin(Settings.Server.Port);
 
 while (true)
 {
     await Start();
 }
 
-async Task Start()
+static async Task Start()
 {
     // listen for players
-    await PlayerListener.UntilNoPLayersForNMinutes(ServerConstants.MinutesUntilShutdown, ServerConstants.IntervalsBetweenOnlineCheck);
+    await PlayerListener.UntilNoPLayersForNMinutes(Settings.Server.MinutesUntilShutdown, Settings.Server.IntervalsBetweenOnlineCheck);
 
     if (await PlayerListener.IsOnline())
     {
@@ -31,7 +34,7 @@ async Task Start()
     }
 
     // wait until ping
-    await PortListener.UntilSomeoneLogin(ServerConstants.Port);
+    await PortListener.UntilSomeoneLogin(Settings.Server.Port);
 
     // stop if server is working
     if (await PlayerListener.IsOnline())

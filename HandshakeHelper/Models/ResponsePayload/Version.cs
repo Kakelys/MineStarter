@@ -12,5 +12,5 @@ public class Version
 
     [JsonProperty(PropertyName = "protocol")]
     [StreamSerialization(0, TypeSerializer = typeof(StringSerializer))]
-    public string Protocol { get; set; }
+    public long Protocol { get; set; }
 }
